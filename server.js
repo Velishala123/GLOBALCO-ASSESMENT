@@ -8,7 +8,6 @@ const path = require('path');
 const db = require('./db');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_me';
 
 app.use(cors());
@@ -114,4 +113,15 @@ app.get('/api/me', authMiddleware, (req, res) => {
   });
 });
 
-app.listen(PORT, () => console.log(`Server listening on http://localhost:${PORT}`));
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'Job board API is running' });
+});
+
+// Only listen on localhost for development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Server listening on http://localhost:${PORT}`));
+}
+
+module.exports = app;
