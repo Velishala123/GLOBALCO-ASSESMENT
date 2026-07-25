@@ -1,12 +1,17 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
-
-const dbPath = path.join(__dirname, 'data', 'db.sqlite');
 const fs = require('fs');
 
-// Ensure data directory exists
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+// Use /tmp for Vercel serverless, or local data dir for development
+const dbPath = process.env.VERCEL 
+  ? path.join('/tmp', 'db.sqlite')
+  : path.join(__dirname, 'data', 'db.sqlite');
+
+// Ensure directory exists (for local development)
+if (!process.env.VERCEL) {
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+}
 
 const db = new sqlite3.Database(dbPath);
 
